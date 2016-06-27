@@ -14,6 +14,6 @@
     "jetpack"
   ],
   "permissions": {
-    "cross-domain-content": ["https://api.tumblr.com"]
+    "cross-domain-content": ["https://api.tumblr.com", "https://secret-basin-29320.herokuapp.com"]
   }
 }
