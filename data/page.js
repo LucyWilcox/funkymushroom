@@ -1,30 +1,44 @@
 window.images = [];
-window.index = 0;
+window.currIndex = 0;
 
-window.addEventListener("load", getImages);
-document.body.addEventListener("click", getImage);
+/*
+On tab load, ask content script to grab images and index
+Then, display the desired image
+*/
+
+window.addEventListener("load", function(event) {
+	window.postMessage({caller: "setup"},
+		"resource://funkymushroom");
+});
+
+// On click, ask content script to increment the index
+document.body.addEventListener("click", function(event) {
+	window.postMessage(
+	{
+		caller: "flip",
+		currIndex: currIndex
+	},
+		"resource://funkymushroom");
+});
+
+// Listen to updates from content script
 window.addEventListener("message", function(event) {
-	if (event.data.caller === "content.js") {
-		console.log(event);
-		console.log(event.data);
-		console.log(event.data.images);
+	console.log(event);
+	if (event.data.command === "getImages") {
 		window.images = event.data.images;
+	} else if (event.data.command === "getIndex") {
+		window.currIndex = event.data.currIndex;
 		getImage();
 	}
 }, false);
 
-function getImages(event) {
-	window.postMessage({caller: "imageGetter"},
-		"resource://funkymushroom");
-}
-
 function getImage() {
-	if (window.index >= window.images.length) {
+	if (window.currIndex >= window.images.length) {
 		console.log("Reached end of images, wrapping around");
-		window.index = 0;
+		window.currIndex = 0;
 	}
-	var img = window.images[window.index];
+	var img = window.images[window.currIndex];
 	console.log(img);
 	document.body.style.backgroundImage = "url(" + img + ")"
-	window.index++;
+	window.currIndex++;
 }

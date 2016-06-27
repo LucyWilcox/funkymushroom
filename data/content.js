@@ -1,17 +1,17 @@
 window.addEventListener('message', function(message) {
-	console.log(message.data);
-	console.log(message.origin);
 	console.log(message);
-	if (message.data.caller === "imageGetter") {
-		console.log("Let's get the images from " + url);
+	if (message.data.caller === "setup") {
 		getImages();
-	} else if (message.data.caller === "imageFlipper") {
+		getIndex();
+	} else if (message.data.caller === "flip") {
 		console.log("Flip to the next image from " + url);
+		setIndex(message.data.currIndex);
 	}
 	
 });
 
 function getImages() {
+	console.log("Let's get the images from " + url);
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
 	xhr.responseType = "json";
@@ -24,25 +24,40 @@ function getImages() {
 				console.log("Found " + post.photos.length + " photos");
 				var url = post.photos[0].original_size.url;
 				console.log(url);
-				images.push(url)
+				images.push(url);
 			}
 		}
 		window.postMessage({
 			"images": images,
-			"caller": "content.js"},
+			"command": "getImages"},
 			"resource://funkymushroom");
 	};
 	xhr.send();
 }
 
+function getIndex() {
+	console.log('Getting index');
+	var xhr = new XMLHttpRequest();
+	xhr.open("GET", hurl);
+	xhr.responseType = "json";
+	xhr.onload = function(e) {
+		console.log(this.response);
+		indexResponse = this.response;
+		currIndex = indexResponse.currid[0].currid;
+		console.log(currIndex);
+		window.postMessage({
+			"currIndex": currIndex,
+			"command": "getIndex"},
+			"resource://funkymushroom");
+	}
+	xhr.send();
+}
 
-
-/*
-document.body.addEventListener("click", function(event) {
-	console.log("Send click message from content to page");
-});
-
-window.addEventListener("message", function(event) {
-	alert("Content: I got something: " + event.data.message);
-});
-*/
+function setIndex(currIndex) {
+	console.log('Setting index to ' + currIndex);
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", hurl);
+	xhr.setRequestHeader("Content-type", "application/json");
+	xhr.send(JSON.stringify({'newid': currIndex++}));	
+	getIndex();
+}
