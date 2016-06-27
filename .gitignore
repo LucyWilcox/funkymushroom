@@ -1,4 +1,5 @@
 *.xpi
+funkyold
 data/secret.js
 
 # Windows image file caches
