@@ -1,0 +1,19 @@
+{
+  "title": "funkymushroom",
+  "name": "funkymushroom",
+  "version": "0.0.1",
+  "description": "Funks you up early in the morning",
+  "main": "app.js",
+  "author": "Jimmy",
+  "engines": {
+    "firefox": ">=38.0a1",
+    "fennec": ">=38.0a1"
+  },
+  "license": "MIT",
+  "keywords": [
+    "jetpack"
+  ],
+  "permissions": {
+    "cross-domain-content": ["https://api.tumblr.com"]
+  }
+}
