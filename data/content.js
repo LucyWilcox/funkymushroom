@@ -1,13 +1,21 @@
+self.port.on("setup", function(payload) {
+	console.log("App port says: Getting images " + payload);
+	getImages();
+});
+
 window.addEventListener('message', function(message) {
-	console.log(message);
-	if (message.data.caller === "setup") {
-		getImages();
+	if (!message.data.hasOwnProperty("caller")) {
+		return;
+	}
+	console.log("Content received a message: " + Object.keys(message.data));
+
+	if (message.data.caller === "locate") {
 		getIndex();
 	} else if (message.data.caller === "flip") {
 		console.log("Flip to the next image from " + url);
 		setIndex(message.data.currIndex);
 	}
-	
+
 });
 
 function getImages() {
@@ -21,15 +29,16 @@ function getImages() {
 		console.log(responseJson);
 		for (let post of responseJson.response.posts) {
 			if (post.photos) {
-				console.log("Found " + post.photos.length + " photos");
+				//console.log("Found " + post.photos.length + " photos");
 				var url = post.photos[0].original_size.url;
-				console.log(url);
+				//console.log(url);
 				images.push(url);
 			}
 		}
 		window.postMessage({
-			"images": images,
-			"command": "getImages"},
+				"images": images,
+				"command": "getImages"
+			},
 			"resource://funkymushroom");
 	};
 	xhr.send();
@@ -46,8 +55,9 @@ function getIndex() {
 		currIndex = indexResponse.currid[0].currid;
 		console.log(currIndex);
 		window.postMessage({
-			"currIndex": currIndex,
-			"command": "getIndex"},
+				"currIndex": currIndex,
+				"command": "getIndex"
+			},
 			"resource://funkymushroom");
 	}
 	xhr.send();
@@ -58,6 +68,8 @@ function setIndex(currIndex) {
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", hurl);
 	xhr.setRequestHeader("Content-type", "application/json");
-	xhr.send(JSON.stringify({'newid': currIndex++}));	
+	xhr.send(JSON.stringify({
+		'newid': currIndex++
+	}));
 	getIndex();
 }
