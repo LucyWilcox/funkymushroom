@@ -26,6 +26,7 @@ function getImages() {
 	xhr.onload = function(e) {
 		var responseJson = this.response;
 		var images = [];
+		nubphotos = responseJson.response.posts.length;
 		console.log(responseJson);
 		for (let post of responseJson.response.posts) {
 			if (post.photos) {
@@ -64,12 +65,13 @@ function getIndex() {
 }
 
 function setIndex(currIndex) {
-	console.log('Setting index to ' + currIndex);
+	console.log('Setting index to random index');
+	var randomImage = Math.floor(Math.random() * nubphotos );
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", hurl);
 	xhr.setRequestHeader("Content-type", "application/json");
 	xhr.send(JSON.stringify({
-		'newid': currIndex++
+		'newid': randomImage
 	}));
 	getIndex();
 }
